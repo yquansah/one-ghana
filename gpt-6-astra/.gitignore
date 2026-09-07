@@ -1,0 +1,7 @@
+# Local caches, verification reports, release archives, and publishing Git metadata
+/work/
+
+# Machine-local files and credentials
+.DS_Store
+.env*
+*.pem

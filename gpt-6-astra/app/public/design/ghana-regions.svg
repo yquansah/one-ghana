@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 520" role="img" aria-labelledby="title description">
+  <title id="title">Ghana's sixteen regions, schematic view</title>
+  <desc id="description">An original regional schematic, not to scale and not an official boundary map. Each region is labelled. All regions have a neutral fill; colour does not represent a data value.</desc>
+  <style>
+    .region { fill: #dfe7d7; stroke: #fffef8; stroke-width: 3; stroke-linejoin: round; }
+    .label { fill: #203a30; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; font-size: 11px; text-anchor: middle; pointer-events: none; }
+    .small { font-size: 10px; }
+    .note { fill: #5a695f; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; font-size: 10px; text-anchor: middle; }
+    .water { fill: #b9d1ce; stroke: #fffef8; stroke-width: 1.5; }
+  </style>
+  <g id="upper-west" data-region="upper-west"><title>Upper West</title><path class="region" d="M104 28 183 28 183 92 151 119 99 104Z"/><text class="label" x="138" y="65"><tspan x="138">Upper</tspan><tspan x="138" dy="14">West</tspan></text></g>
+  <g id="upper-east" data-region="upper-east"><title>Upper East</title><path class="region" d="M183 28 281 26 293 74 238 84 183 72Z"/><text class="label" x="239" y="53">Upper East</text></g>
+  <g id="north-east" data-region="north-east"><title>North East</title><path class="region" d="M183 72 238 84 293 74 300 115 238 139 184 116Z"/><text class="label" x="241" y="109">North East</text></g>
+  <g id="savannah" data-region="savannah"><title>Savannah</title><path class="region" d="M99 104 151 119 184 93 184 116 210 140 190 204 137 224 85 206 85 153Z"/><text class="label" x="139" y="171">Savannah</text></g>
+  <g id="northern" data-region="northern"><title>Northern</title><path class="region" d="M184 116 238 139 300 115 294 185 268 211 220 214 190 204 210 140Z"/><text class="label" x="247" y="175">Northern</text></g>
+  <g id="bono" data-region="bono"><title>Bono</title><path class="region" d="M85 206 137 224 140 263 107 292 66 280 64 234Z"/><text class="label" x="101" y="251">Bono</text></g>
+  <g id="bono-east" data-region="bono-east"><title>Bono East</title><path class="region" d="M137 224 190 204 220 214 243 248 219 286 176 285 140 263Z"/><text class="label" x="185" y="245"><tspan x="185">Bono</tspan><tspan x="185" dy="14">East</tspan></text></g>
+  <g id="oti" data-region="oti"><title>Oti</title><path class="region" d="M220 214 268 211 294 185 309 264 291 319 251 300 219 286 243 248Z"/><text class="label" x="277" y="262">Oti</text></g>
+  <g id="ahafo" data-region="ahafo"><title>Ahafo</title><path class="region" d="M107 292 140 263 176 285 155 329 116 333 94 320Z"/><text class="label" x="132" y="309">Ahafo</text></g>
+  <g id="ashanti" data-region="ashanti"><title>Ashanti</title><path class="region" d="M176 285 219 286 251 300 249 336 215 371 169 361 155 329Z"/><text class="label" x="201" y="329">Ashanti</text></g>
+  <g id="western-north" data-region="western-north"><title>Western North</title><path class="region" d="M66 280 107 292 94 320 116 333 128 375 106 403 58 379 48 337Z"/><text class="label small" x="86" y="352"><tspan x="86">Western</tspan><tspan x="86" dy="13">North</tspan></text></g>
+  <g id="western" data-region="western"><title>Western</title><path class="region" d="M58 379 106 403 118 440 86 482 53 467 40 425Z"/><text class="label small" x="76" y="431">Western</text></g>
+  <g id="central" data-region="central"><title>Central</title><path class="region" d="M116 333 155 329 169 361 215 371 204 418 172 451 118 440 106 403 128 375Z"/><text class="label" x="160" y="402">Central</text></g>
+  <g id="eastern" data-region="eastern"><title>Eastern</title><path class="region" d="M251 300 291 319 280 365 293 393 264 418 204 418 215 371 249 336Z"/><text class="label" x="253" y="370">Eastern</text></g>
+  <g id="volta" data-region="volta"><title>Volta</title><path class="region" d="M291 319 309 264 322 322 319 369 345 423 310 436 293 393 280 365Z"/><text class="label" x="309" y="358" transform="rotate(74 309 358)">Volta</text></g>
+  <g id="greater-accra" data-region="greater-accra"><title>Greater Accra</title><path class="region" d="M204 418 264 418 293 393 310 436 256 452 220 445 172 451Z"/><text class="label small" x="250" y="435">Greater Accra</text></g>
+  <text class="note" x="201" y="506">Regional schematic · not to scale</text>
+</svg>
