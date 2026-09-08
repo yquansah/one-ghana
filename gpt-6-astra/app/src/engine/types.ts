@@ -270,3 +270,7 @@ export interface LegacyScenario {
   }[];
   assumptions: string[];
 }
+
+/** Version-1 reviewed external event inputs; absent inputs preserve the original engine. */
+export interface ExternalQuarterEffects { cocoaYieldPct?: number; energyAvailabilityPoints?: number; externalDemandPct?: number }
+export type ExternalEventSchedule = Record<number, ExternalQuarterEffects>;

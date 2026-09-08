@@ -1,0 +1,12 @@
+CREATE TABLE research_jobs(id TEXT PRIMARY KEY,kind TEXT NOT NULL,status TEXT NOT NULL,started_at TEXT NOT NULL,finished_at TEXT,error TEXT);
+CREATE TABLE source_documents(hash TEXT PRIMARY KEY,url TEXT NOT NULL,source_name TEXT NOT NULL,retrieved_at TEXT NOT NULL,object_key TEXT NOT NULL);
+CREATE TABLE briefings(id TEXT NOT NULL,version INTEGER NOT NULL,payload TEXT NOT NULL,status TEXT NOT NULL,created_at TEXT NOT NULL,source_hash TEXT NOT NULL UNIQUE,PRIMARY KEY(id,version));
+CREATE TABLE published_events(id TEXT NOT NULL,version INTEGER NOT NULL,briefing_id TEXT NOT NULL,payload TEXT NOT NULL,status TEXT NOT NULL,PRIMARY KEY(id,version));
+CREATE TABLE research_audit(id TEXT PRIMARY KEY,actor_id TEXT NOT NULL,action TEXT NOT NULL,target_id TEXT NOT NULL,created_at TEXT NOT NULL);
+CREATE TABLE spending(month TEXT PRIMARY KEY,spent_usd REAL NOT NULL DEFAULT 0 CHECK(spent_usd>=0));
+CREATE TABLE notification_preferences(account_id TEXT PRIMARY KEY REFERENCES accounts(id) ON DELETE CASCADE,digest TEXT NOT NULL DEFAULT 'off',major_alerts INTEGER NOT NULL DEFAULT 0,topics TEXT NOT NULL DEFAULT '[]',suppressed INTEGER NOT NULL DEFAULT 0);
+CREATE TABLE email_outbox(id TEXT PRIMARY KEY,account_id TEXT NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,kind TEXT NOT NULL,period TEXT NOT NULL,payload TEXT NOT NULL,status TEXT NOT NULL DEFAULT 'pending',created_at TEXT NOT NULL,sent_at TEXT,provider_id TEXT,attempted_at TEXT,lease_until INTEGER NOT NULL DEFAULT 0,send_payload TEXT,last_error TEXT,attempt_count INTEGER NOT NULL DEFAULT 0,UNIQUE(account_id,kind,period));
+CREATE TABLE email_webhooks(id TEXT PRIMARY KEY,received_at TEXT NOT NULL,payload TEXT NOT NULL,status TEXT NOT NULL DEFAULT 'pending');
+CREATE TABLE briefing_releases(id TEXT NOT NULL,version INTEGER NOT NULL,released_at TEXT NOT NULL,PRIMARY KEY(id,version));
+CREATE INDEX briefings_status ON briefings(status,created_at);
+CREATE INDEX outbox_status ON email_outbox(status,created_at);

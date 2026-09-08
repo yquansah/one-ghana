@@ -9,14 +9,21 @@
     "dev": "vinext dev",
     "build": "vinext build",
     "start": "node scripts/serve-static.mjs",
-    "lint": "oxlint src app scripts tests vite.config.ts next.config.ts",
+    "lint": "oxlint src app cloud scripts tests vite.config.ts next.config.ts",
     "format": "oxfmt",
     "preview": "node scripts/serve-static.mjs",
     "test": "node scripts/run-tests.mjs",
     "typecheck": "tsc --noEmit --incremental false",
     "check:release": "npm run typecheck && npm test && npm run build && npm run check:static",
     "analyze:model": "node --import tsx scripts/model-sensitivity.ts",
-    "check:static": "node scripts/check-static.mjs"
+    "check:static": "node scripts/check-static.mjs",
+    "cf": "node scripts/cloudflare.mjs",
+    "build:saas": "node scripts/build-saas.mjs",
+    "dev:saas": "node scripts/cloudflare.mjs dev --env= --persist-to ../work/cloudflare-state",
+    "check:cloud": "tsc --noEmit --incremental false",
+    "deploy:staging": "node scripts/deploy-saas.mjs staging",
+    "deploy:production": "node scripts/deploy-saas.mjs production",
+    "check:saas": "npm run typecheck && npm run lint && npm test && npm run build:saas && node scripts/cloudflare.mjs deploy --env staging --dry-run"
   },
   "dependencies": {
     "@base-ui/react": "1.7.0",
@@ -40,7 +47,7 @@
     "vinext": "1.0.0-beta.9"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "4.20260515.1",
+    "@cloudflare/workers-types": "5.20260908.1",
     "@openai/sites-vite-plugin": "0.2.0",
     "@tailwindcss/postcss": "4.2.1",
     "@types/node": "22.19.19",
@@ -54,7 +61,8 @@
     "tailwindcss": "4.2.1",
     "tsx": "4.23.13",
     "typescript": "5.9.3",
-    "vite": "8.0.16"
+    "vite": "8.0.16",
+    "wrangler": "4.130.0"
   },
   "type": "module"
 }

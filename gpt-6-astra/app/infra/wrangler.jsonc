@@ -1,0 +1,48 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "one-ghana-saas-local",
+  "main": "../cloud/index.ts",
+  "compatibility_date": "2026-09-08",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "assets": {
+    "directory": "../dist/saas",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*", "/auth/*", "/health", "/unsubscribe*"],
+    "not_found_handling": "single-page-application"
+  },
+  "observability": {"enabled": true},
+  "vars": {
+    "ENVIRONMENT": "test", "APP_ORIGIN": "http://localhost:8787",
+    "MONTHLY_BUDGET_USD": "250", "FIXED_COST_RESERVE_USD": "75",
+    "OPENAI_MODEL": "gpt-5.4-mini-2026-03-17", "RESEARCH_ENABLED": "false", "EMAIL_ENABLED": "false"
+  },
+  "d1_databases": [{"binding":"DB","database_name":"one-ghana-local","migrations_dir":"../migrations"}],
+  "r2_buckets": [{"binding":"RESEARCH_BUCKET","bucket_name":"one-ghana-research-local"}],
+  "queues": {
+    "producers":[{"binding":"NOTIFICATION_QUEUE","queue":"one-ghana-email-local"}],
+    "consumers":[{"queue":"one-ghana-email-local","max_batch_size":10,"max_retries":3,"dead_letter_queue":"one-ghana-email-dead-local"}]
+  },
+  "workflows": [{"name":"one-ghana-research-local","binding":"RESEARCH_WORKFLOW","class_name":"GhanaResearchWorkflow"}],
+  "env": {
+    "staging": {
+      "name": "one-ghana-saas-staging",
+      "vars":{"ENVIRONMENT":"staging","APP_ORIGIN":"https://one-ghana-saas-staging.workeryoofi.workers.dev","MONTHLY_BUDGET_USD":"250","FIXED_COST_RESERVE_USD":"75","OPENAI_MODEL":"gpt-5.4-mini-2026-03-17","RESEARCH_ENABLED":"false","EMAIL_ENABLED":"false"},
+      "d1_databases":[{"binding":"DB","database_name":"one-ghana-staging","database_id":"dea57498-2417-4e40-8d03-908a3eca616e","migrations_dir":"../migrations"}],
+      "r2_buckets":[],
+      "queues":{"producers":[{"binding":"NOTIFICATION_QUEUE","queue":"one-ghana-email-staging"}],"consumers":[{"queue":"one-ghana-email-staging","max_batch_size":10,"max_retries":3,"dead_letter_queue":"one-ghana-email-dead-staging"}]},
+      "workflows":[{"name":"one-ghana-research-staging","binding":"RESEARCH_WORKFLOW","class_name":"GhanaResearchWorkflow"}],
+      "triggers":{"crons":[]}
+    },
+    "production": {
+      "name": "one-ghana-saas",
+      "routes": [{"pattern":"oneafrica.yoofi.io","custom_domain":true}],
+      "vars":{"ENVIRONMENT":"production","APP_ORIGIN":"https://oneafrica.yoofi.io","MONTHLY_BUDGET_USD":"250","FIXED_COST_RESERVE_USD":"75","OPENAI_MODEL":"gpt-5.4-mini-2026-03-17","RESEARCH_ENABLED":"false","EMAIL_ENABLED":"false"},
+      "d1_databases":[{"binding":"DB","database_name":"one-ghana-production","database_id":"45437707-e7af-4d88-9f43-23c3a64c1807","migrations_dir":"../migrations"}],
+      "r2_buckets":[],
+      "queues":{"producers":[{"binding":"NOTIFICATION_QUEUE","queue":"one-ghana-email-production"}],"consumers":[{"queue":"one-ghana-email-production","max_batch_size":10,"max_retries":3,"dead_letter_queue":"one-ghana-email-dead-production"}]},
+      "workflows":[{"name":"one-ghana-research-production","binding":"RESEARCH_WORKFLOW","class_name":"GhanaResearchWorkflow"}],
+      "triggers":{"crons":["0 * * * *","0 6 * * *","0 8 * * *","*/5 * * * *"]}
+    }
+  }
+}

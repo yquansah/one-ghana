@@ -2,7 +2,7 @@
 
 ## 1. The experience
 
-Build a private web game in which you govern Ghana through economic and political institutions, learning how decisions affect national output and people’s lives.
+Build a free public SaaS web game with Google sign-in in which you govern Ghana through economic and political institutions, learning how decisions affect national output and people’s lives.
 
 The agreed design is:
 
@@ -13,7 +13,7 @@ The agreed design is:
 - **Transparent explanations:** inspect mechanisms, assumptions, likely tradeoffs, and scenario ranges before deciding.
 - **Welfare scorecard:** track economic output, household living standards, jobs, health, education, life satisfaction, inequality, freedoms, and environmental sustainability separately.
 
-Use a current Ghana snapshot with a clearly fictional inauguration and election timetable. Freeze the initial research cutoff at **4 September 2026**; distinguish this alternative history from Ghana’s actual political calendar.
+Use a current Ghana snapshot with a clearly fictional inauguration and election timetable. Preserve **4 September 2026** as the original historical scenario cutoff. Continuous research produces separately versioned evidence and approved scenarios; distinguish the fictional campaign calendar from current real-world dates.
 
 ## 2. Ghana’s evidence base
 
@@ -91,46 +91,60 @@ Allow campaign branches that compare policies under identical external shocks. P
 
 After leaving office, show 20-year legacy scenarios covering policy maintenance, partial reversal, and external stress. Track whether institutions make improvements durable.
 
-## 4. Application and implementation
+## 4. SaaS architecture: Cloudflare and WorkOS
 
-Use the Sites starter with React and TypeScript. Run the simulation in a browser worker so forecasts and comparisons do not block interaction.
+The agreed public beta uses Cloudflare Workers with Static Assets for the existing React/TypeScript frontend and same-origin application API; D1 for account-owned campaigns, revisions, preferences, research metadata and audit records; private R2 for permitted research artifacts; Cron Triggers for hourly collection and daily discovery/digests; Workflows for research stages and review coordination; and Queues for email distribution. WorkOS AuthKit provides Google sign-in. Resend delivers emails and OpenAI Responses provides bounded research extraction/synthesis. Supabase is not part of this architecture.
 
-The interface opens directly into the game:
+Preserve the existing private Sites demo. All source, infrastructure configuration, documentation and work artifacts stay within gpt-6-astra. The default static build remains the historical demo; a separate SaaS build mounts the account-aware application. Use version-controlled Wrangler configuration with separate staging and production resources and managed secrets.
 
-- **Presidential briefing:** current conditions, decisions awaiting action, budget position, and next turn.
-- **Ghana view:** regional map with sector and household drilldowns.
-- **Policy workspace:** build, compare, finance, and submit proposals.
-- **Institutions view:** legislative support, implementation capacity, accountability, and reform progress.
-- **Results and evidence:** welfare trends, causal explanations, campaign comparisons, sources, and assumptions.
+### Accounts and campaigns
 
-Provide engine interfaces for creating a campaign, previewing a proposal, submitting actions, advancing a quarter, and running legacy scenarios. Separate baseline data, model parameters, policy definitions, game state, and turn reports.
+Handle Google OAuth login/callback, secure HTTP-only sessions, refresh and logout in the Worker. Authenticate every protected request and protect cookie-authenticated mutations against CSRF. Map verified WorkOS identities to internal account IDs; never accept browser-supplied email as ownership. D1 access is server-only and every campaign query enforces ownership.
 
-Use browser storage for automatic saves, plus versioned export/import and campaign branching. Save the dataset version, model version, policy history, and random seed. Dataset updates apply to new campaigns; existing campaigns retain their original baseline.
+Keep server mutations authoritative using the same deterministic engine. Browser module workers compute previews and comparisons. Campaign revisions and idempotency keys prevent duplicate turns and cross-device overwrites; conflicts preserve drafts and offer reload/retry. Cloud saves, branches, versioned JSON import/export and explicit migration of local saves support portability. Original saves retain their baseline, seed, model version and outcomes. A classic campaign must explicitly create a separate live-event branch before enabling current events.
 
-Provide a small WebMCP interface using the same game actions and validation as the UI. No paid AI service is required for gameplay or explanations.
+Retain the briefing, regional/household view, policy workspace, institutional constraints, results and evidence. Add account campaign controls, Ghana-now briefings, scenario review, notification preferences and an administrator research dashboard. Extend WebMCP through the same authenticated and validated handlers as the UI.
 
-Deliver in this order:
+### Current events
 
-1. **Evidence foundation:** sourced data package, reconciliation notes, and documented model assumptions.
-2. **Cocoa playable slice:** complete policy-to-outcome loop with households, finances, institutional constraints, and explanations.
-3. **Full campaign:** wider sectors, all policy families, regional differences, elections, comparisons, and legacy.
-4. **Validated private release:** production build, private hosting, and an in-game guide to the model’s limits.
+Every briefing separates reported facts, attributed announcements, interpretation and model assumptions. Show source links, publication/retrieval dates, event dates, relevance and uncertainty. Players preview and accept reviewed scenarios for a future fictional game quarter. Reading a briefing or clicking an email never applies an event. Retain immutable applied event payloads and mapping versions; deterministic comparisons use the same accepted events and external shocks. Corrections supersede public items without rewriting campaign history. AI cannot invent executable rules or directly alter simulation state.
 
-## 5. Acceptance criteria and defaults
+Initial mapping v1 supports bounded cocoa-yield, electricity-availability and external-demand scenarios. All mappings require human approval and documented assumptions. They are teaching parameters, not estimated real policy effects. Events outside the reviewed catalogue remain briefings.
 
-The game is ready when:
+## 5. Continuous research and email
 
-- Starting indicators reconcile to their source definitions and periods.
-- Fiscal accounts, debt, production, trade, and population accounting remain internally consistent.
-- Replanting takes time; processing requires inputs and capacity; spending requires financing.
-- The same policy can benefit some households while disadvantaging others.
-- Legislative rejection, implementation failure, election loss, and policy reversal work coherently.
-- Identical seeds and actions reproduce results; comparisons preserve the same external shocks.
-- Save, reload, import, and campaign branching preserve state correctly.
-- Baseline and stress scenarios remain numerically stable throughout the presidency and legacy period.
-- Every policy has a causal explanation and clearly identified assumptions.
-- The player can complete the cocoa lesson, govern a full term, and understand why outcomes differed from expectations.
+Run hourly approved-source checks and daily broader discovery in cloud jobs independently of browsers and Codex. Collect source evidence, reconcile units/reference periods, cluster duplicates, retain provenance, detect revisions, and draft source-supported briefings. Start with official Ghana statistical, monetary, fiscal, agricultural, legislative, judicial and electoral institutions, supplemented by reputable reporting.
 
-Defaults: single player, English, desktop-first responsive interface, private hosting, fictional political personalities within real institutional structures, and no universal winning score. Life satisfaction remains distinct from government approval; any simulated wellbeing measure is labelled as a model proxy.
+Automatically publish only validated official-data briefings and clearly attributed announcements. Disputed political claims, conflicting evidence, substantive interpretation and every new numerical event mapping require administrator review. The project owner is the initial administrator. Missing source support fails closed; unavailable data stays unavailable. Prefer source metadata, hashes and permitted excerpts; store larger permitted artifacts privately. New baseline datasets require their own reconciled release rather than being inferred from individual news stories.
 
-Historical comparisons and sensitivity tests will assess plausibility. Matching historical data alone will not be presented as proof that the game predicts policy effects.
+Persist job progress, deduplicate processing, retry bounded failures and surface source freshness, review backlog, failed jobs and spending. A source or AI outage leaves gameplay usable with a visible freshness notice. Research is generated once and shared across players; selected topics and active policy sectors determine relevance.
+
+Email starts disabled until explicit consent. Offer daily digests at **08:00 Africa/Accra**, weekly summaries or off. Major-event alerts require separate opt-in and a reviewed designation, capped at two per day. Skip empty digests. Each message explains the development, sources, relevant game tradeoffs and links to its briefing.
+
+Use a durable outbox and Cloudflare Queues to Resend; queue delivery is at least once, so enforce database and provider idempotency. Recheck consent before sending, verify delivery webhooks, suppress bounces/complaints and honor unsubscribe without login. Never send from an unverified domain. Secrets remain server-side.
+
+## 6. Delivery and operations
+
+1. Update this plan and conflicting architecture/operations documents.
+2. Implement Cloudflare bindings, WorkOS login, D1 ownership, cloud campaigns and migration.
+3. Implement durable research, provenance and hybrid editorial publication.
+4. Integrate optional event scenarios and Ghana-now briefings.
+5. Implement consent-based queued email, operational controls and public-beta deployment.
+
+Use a **$250 monthly operating ceiling**: reserve fixed platform/email costs before allocating variable research costs, share summaries, bound requests/tokens, meter spending, alert on thresholds and suspend discretionary work before its budget is exhausted. Never automatically purchase upgrades. Provider billing alerts alone are not hard application limits. Deployment requires valid Cloudflare access, production WorkOS/Google settings, OpenAI and Resend secrets, an approved application origin and a verified sender domain. Staging sending/research remain off until verified; production enablement follows staging acceptance. Preserve rollback to the existing private demo.
+
+## 7. Acceptance and defaults
+
+Retain all original simulation acceptance: source definitions/periods reconcile; fiscal/debt/production/trade/population accounting is consistent; replanting, capacity and financing constraints apply; households experience different outcomes; rejection, failure, elections and reversal work; seeds/actions reproduce results; comparisons preserve shocks; saves/branches preserve state; full-term and legacy scenarios remain numerically stable; and every policy explains assumptions and mechanisms.
+
+Additional SaaS acceptance:
+
+- Two accounts cannot read or mutate each other's campaigns; OAuth/session/CSRF validation and logout work.
+- Legacy imports preserve original data; concurrent writes and duplicate requests cannot lose or repeat turns.
+- Accepted events apply once at the intended turn, survive export/import, and replay identically through corrections.
+- Disputed sources, malicious document instructions, duplicate stories, malformed AI output and failed jobs cannot bypass review or invent approved effects.
+- Email respects current consent, deduplicates retries, skips empty digests and suppresses unsubscribed/bounced recipients.
+- Research continues while browsers are closed; freshness, failures and budget limits are visible.
+- Existing engine tests pass alongside backend, migration, research, email and integration tests.
+
+Defaults: single player, English, desktop-first responsive interface, free public beta, Google identity, cloud persistence, fictional political personalities and timetable, optional events and no universal winning score. Life satisfaction remains distinct from approval. Monetary values, observed data and model proxies retain clear labels. Historical plausibility is not proof of causal prediction. Billing, multiplayer, enterprise organizations and automatic event application are out of scope.

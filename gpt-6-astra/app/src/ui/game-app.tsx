@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect, type ReactNode } from 'react';
 import {
   ArrowRight,
   BookOpen,
@@ -20,7 +20,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { useGame, safely } from './use-game';
+import { useGame, safely, type GameController } from './use-game';
 import { Policies, initialProposal } from './policies';
 import { Ghana, Institutions } from './places';
 import { Results } from './results';
@@ -39,12 +39,48 @@ const navigation = [
 ] as const;
 export default function GameApp() {
   const game = useGame();
+  return <GameShell game={game} />;
+}
+export function GameShell({
+  game,
+  cloudControls,
+  draftKey,
+}: {
+  game: GameController;
+  cloudControls?: ReactNode;
+  draftKey?: string;
+}) {
   const [draft, setDraft] = useState<PolicyProposal>(initialProposal());
+  useEffect(() => {
+    queueMicrotask(() => {
+      if (draftKey) {
+        try {
+          const saved = sessionStorage.getItem(draftKey);
+          if (saved) {
+            const parsed = JSON.parse(saved) as PolicyProposal;
+            if (typeof parsed.policyId === 'string') setDraft(parsed);
+          }
+        } catch {
+          /* Keep the editable default when browser storage is unavailable. */
+        }
+      }
+    });
+  }, [draftKey]);
+  function saveDraft(value: PolicyProposal) {
+    setDraft(value);
+    if (draftKey) {
+      try {
+        sessionStorage.setItem(draftKey, JSON.stringify(value));
+      } catch {
+        /* Cloud campaign saving remains independent of draft storage. */
+      }
+    }
+  }
   const [campaignOpen, setCampaignOpen] = useState(false);
   const [guideOpen, setGuideOpen] = useState(false);
   const state = game.state;
   function choosePolicy(id: string) {
-    setDraft(initialProposal(id));
+    saveDraft(initialProposal(id));
     game.clearPreview();
     game.setView('policies');
   }
@@ -190,7 +226,7 @@ export default function GameApp() {
             ) : game.view === 'ghana' ? (
               <Ghana state={state} />
             ) : game.view === 'policies' ? (
-              <Policies game={game} draft={draft} setDraft={setDraft} />
+              <Policies game={game} draft={draft} setDraft={saveDraft} />
             ) : game.view === 'institutions' ? (
               <Institutions state={state} />
             ) : game.view === 'results' ? (
@@ -203,7 +239,8 @@ export default function GameApp() {
                 One Ghana · A presidency and institutions learning game
               </span>
               <span>
-                Evidence cutoff: 4 Sep 2026 · English · Browser-local campaigns
+                Evidence cutoff: 4 Sep 2026 · English ·{' '}
+                {cloudControls ? 'Cloud campaigns' : 'Browser-local campaigns'}
               </span>
             </footer>
           </main>
@@ -243,11 +280,26 @@ export default function GameApp() {
           ) : null}
         </div>
       </div>
-      <CampaignControls
-        game={game}
-        open={campaignOpen}
-        onOpenChange={setCampaignOpen}
-      />
+      {cloudControls ? (
+        <Dialog open={campaignOpen} onOpenChange={setCampaignOpen}>
+          <DialogContent className="og-modal">
+            <DialogHeader>
+              <DialogTitle>Cloud campaign desk</DialogTitle>
+              <DialogDescription>
+                Campaigns are private to your account. Original campaigns remain
+                available when branching.
+              </DialogDescription>
+            </DialogHeader>
+            {cloudControls}
+          </DialogContent>
+        </Dialog>
+      ) : (
+        <CampaignControls
+          game={game}
+          open={campaignOpen}
+          onOpenChange={setCampaignOpen}
+        />
+      )}
       <Dialog open={guideOpen} onOpenChange={setGuideOpen}>
         <DialogContent className="og-modal og-guide-modal">
           <DialogHeader>

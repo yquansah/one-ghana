@@ -1,4 +1,6 @@
-# One Ghana operations
+# Private demo operations
+
+This document describes the preserved browser-only Sites release. For the Cloudflare/WorkOS SaaS, use [SAAS-OPERATIONS.md](SAAS-OPERATIONS.md).
 
 The application is a static export. The browser owns the simulation worker, campaign storage and JSON import/export. There is no application database, paid AI API, Node production server or server-function endpoint in the release. Sites controls owner-only access; the coordinator owns hosting configuration, deployment and access verification.
 
@@ -52,7 +54,7 @@ Archives and current-campaign saves are local storage too. Exporting is the port
 
 ## Dependencies
 
-On 7 September 2026 the installed tree audit reports **zero vulnerabilities** in `work/npm-audit-after.json`. Targeted changes were React/react-dom/react-server-dom-webpack **19.2.8**, Vite **8.0.16**, vinext **1.0.0-beta.9**, plugin-rsc **0.5.34**, and permitted transitive esbuild/undici updates. The unused Cloudflare Vite plugin and Wrangler were removed; worker types remain for the starter TypeScript configuration. The generated component libraries remain.
+On 7 September 2026 the installed tree audit reports **zero vulnerabilities** in `work/npm-audit-after.json`. Targeted changes were React/react-dom/react-server-dom-webpack **19.2.8**, Vite **8.0.16**, vinext **1.0.0-beta.9**, plugin-rsc **0.5.34**, and permitted transitive esbuild/undici updates. At that private-demo release, the unused Cloudflare Vite plugin and Wrangler were removed; Wrangler has since been restored for the separate SaaS Worker; worker types remain for the starter TypeScript configuration. The generated component libraries remain.
 
 The RSC patch addresses [GHSA-wx67-qw84-cm4g](https://github.com/advisories/GHSA-wx67-qw84-cm4g); Vite addresses [GHSA-fx2h-pf6j-xcff](https://github.com/advisories/GHSA-fx2h-pf6j-xcff). The vulnerable [image-size parser](https://github.com/advisories/GHSA-w3rx-r6r6-pgpr) had no patched package version; the compatible vinext update removed the dependency. No version-forcing override or blanket major update was used. The static export and typecheck passed on the updated stack; the final integrated production build also passed the release gate.
 

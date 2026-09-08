@@ -818,3 +818,9 @@ body {
     min-height: 120px;
   }
 }
+
+/* Account layer shares the presidency palette and typography. */
+.saas-login{min-height:100vh;display:grid;place-items:center;padding:24px;background:var(--gh-bg,#f5f3eb)}
+.saas-login main{max-width:620px;padding:40px}.saas-login h1{font-size:clamp(2rem,5vw,3.5rem);line-height:1.1}
+.saas-account{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:16px 24px;border-bottom:1px solid #d8dccf;background:#fff}.saas-account nav{display:flex;gap:8px;flex-wrap:wrap;flex:1}.saas-account button[aria-current=page]{background:#173e35;color:white}
+.saas-page{max-width:1050px;margin:auto;padding:32px 24px;display:grid;gap:20px}.saas-page .gh-panel{padding:24px}.saas-input{display:block;width:100%;padding:12px;border:1px solid #a6b2aa;border-radius:6px;background:white;color:#183c32;min-height:44px}.saas-banner{padding:16px 24px}.saas-json{max-width:100%;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere}.saas-page dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}.saas-page dd{font-weight:700}.saas-page input[type=checkbox]{width:20px;height:20px;margin-right:8px}.saas-page a{overflow-wrap:anywhere;text-decoration:underline}.saas-page button,.saas-account button{min-height:44px}.saas-page h1{font-size:2rem}.saas-page h2{font-size:1.4rem}@media(max-width:600px){.saas-account{padding:12px}.saas-account nav{order:3;flex-basis:100%}.saas-page{padding:20px 12px}.saas-login main{padding:24px}.saas-account span{overflow-wrap:anywhere;min-width:0}}

@@ -12,6 +12,8 @@ import {
   REGION_DEFAULTS,
 } from './calibration';
 import type {
+  ExternalQuarterEffects,
+  ExternalEventSchedule,
   ActivePolicy,
   BranchComparison,
   GameState,
@@ -369,6 +371,7 @@ function reformResistance(s: GameState, p: PolicyProposal): number {
 export function previewProposal(
   s: GameState,
   p: PolicyProposal,
+  externalSchedule: ExternalEventSchedule = {},
 ): PolicyPreview {
   const d = POLICY_BY_ID[p?.policyId];
   if (!d) throw new Error('Unknown policy.');
@@ -429,8 +432,8 @@ export function previewProposal(
         treatment.phase === 'presidency';
         q++
       ) {
-        control = advanceQuarter(control).state;
-        treatment = advanceQuarter(treatment).state;
+        control = advanceQuarter(control, externalSchedule[control.quarter + 1]).state;
+        treatment = advanceQuarter(treatment, externalSchedule[treatment.quarter + 1]).state;
       }
       results.push(delta(treatment, control));
     }
@@ -554,10 +557,13 @@ function effectStrength(s: GameState, a: ActivePolicy) {
   if (d.id === 'school-investment' && elapsed < 12) strength *= 0.65;
   return strength;
 }
-export function advanceQuarter(state: GameState): {
+export function advanceQuarter(state: GameState, external: ExternalQuarterEffects = {}): {
   state: GameState;
   report: TurnReport;
 } {
+  const bounds: Record<string, number> = { cocoaYieldPct: 15, energyAvailabilityPoints: 10, externalDemandPct: 5 };
+  if (!external || typeof external !== 'object' || Array.isArray(external) || Object.entries(external).some(([key, value]) => !Object.hasOwn(bounds, key) || typeof value !== 'number' || !Number.isFinite(value) || Math.abs(value) > bounds[key]))
+    throw new Error('External event effects exceed the reviewed model bounds.');
   if (state.phase !== 'presidency' || state.quarter >= 32)
     throw new Error(
       'The presidency has ended. Run the 20-year legacy scenarios.',
@@ -720,6 +726,7 @@ export function advanceQuarter(state: GameState): {
     i = s.institutions,
     w = s.welfare,
     f = s.fiscal;
+  if (external.energyAvailabilityPoints) e.electricityReliability = clamp(e.electricityReliability + external.energyAvailabilityPoints, 20, 99);
   const investmentAccess =
     (i.judicialCapacity - 55) * 0.008 + (i.procurementIntegrity - 49) * 0.006;
   const investmentTransmission = (e.privateInvestment - 50) * 0.025;
@@ -734,7 +741,8 @@ export function advanceQuarter(state: GameState): {
       shocks.global * 0.65 +
       shocks.weather * 0.28 +
       shocks.commodity * 0.25 -
-      (i.policyRate - 14) * 0.03,
+      (i.policyRate - 14) * 0.03 +
+      (external.externalDemandPct ?? 0) * 0.12,
     -5,
     12,
   );
@@ -786,7 +794,8 @@ export function advanceQuarter(state: GameState): {
         shocks.commodity * 0.004 +
         (effects.cocoa ?? 0) / 400 -
         rehabLoss -
-        shocks.disease * (1 - Math.min(0.7, (effects.cocoa ?? 0) * 0.1))),
+        shocks.disease * (1 - Math.min(0.7, (effects.cocoa ?? 0) * 0.1))) *
+      (1 + (external.cocoaYieldPct ?? 0) / 100),
     150,
     1800,
   );
@@ -1173,6 +1182,7 @@ export function comparePolicies(
   state: GameState,
   proposals: PolicyProposal[],
   quarters = 8,
+  externalSchedule: ExternalEventSchedule = {},
 ): BranchComparison[] {
   if (!Number.isInteger(quarters) || quarters < 1 || quarters > 32)
     throw new Error('Comparison horizon must be 1–32 quarters.');
@@ -1192,7 +1202,7 @@ export function comparePolicies(
     let current = initial;
     const reports: TurnReport[] = [];
     for (let t = 0; t < horizon && current.phase === 'presidency'; t++) {
-      const result = advanceQuarter(current);
+      const result = advanceQuarter(current, externalSchedule[current.quarter + 1]);
       current = result.state;
       reports.push(result.report);
     }

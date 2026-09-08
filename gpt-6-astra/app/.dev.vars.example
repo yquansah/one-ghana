@@ -1,0 +1,13 @@
+# Copy to infra/.dev.vars (ignored). Never put real values in tracked files.
+WORKOS_API_KEY=
+WORKOS_CLIENT_ID=
+SESSION_ENCRYPTION_KEY=
+ADMIN_EMAILS=
+OPENAI_API_KEY=
+RESEND_API_KEY=
+RESEND_WEBHOOK_SECRET=
+UNSUBSCRIBE_SECRET=
+EMAIL_FROM=
+# Keep research and sending disabled until real-provider staging checks pass.
+RESEARCH_ENABLED=false
+EMAIL_ENABLED=false

@@ -1,6 +1,8 @@
 # One Ghana implementation status
 
-Status: **complete — implementation verified and privately published**.
+Status: **Cloudflare SaaS production deployed at oneafrica.yoofi.io (69 tests). Production Google OAuth configuration, research and email activation remain pending.**
+
+The sections below record the completed original private-demo release. The new Cloudflare/WorkOS implementation is documented in `SAAS-OPERATIONS.md` and `SAAS-RELEASE.md`; it has not replaced that hosted demo.
 
 All project files are in this gpt-6-astra directory. Application: `app/`; research, design, API, operations and agent handoffs: `docs/`; cache, validation reports and packaging: `work/`.
 
@@ -33,4 +35,4 @@ Private Sites project: `appgprj_6a9f1ca041108191932b906200bab87b`. Source commit
 
 Private deployment succeeded on 7 September 2026 at 21:11:27 UTC. Play: https://one-ghana-astra.ybquansah.chatgpt.site
 
-The completion heartbeat has been paused and the implementation goal is complete. Do not redispatch completed implementation work or start ongoing post-completion research unless the user requests it. See `docs/RELEASE.md` for exact publication identifiers and verification scope.
+The original private-demo completion heartbeat was paused after that release. The user subsequently authorized the separate SaaS implementation and browser-independent research pipeline. See `docs/RELEASE.md` for exact publication identifiers and verification scope.

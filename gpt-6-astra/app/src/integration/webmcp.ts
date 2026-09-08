@@ -6,6 +6,9 @@ export type GameToolActions = {
   submit: (proposal: PolicyProposal) => Promise<unknown>;
   advance: () => Promise<unknown>;
   compare: (proposals: PolicyProposal[]) => Promise<unknown>;
+  briefings?: () => Promise<unknown>;
+  previewEvent?: (id: string, version: number) => Promise<unknown>;
+  acceptEvent?: (id: string, version: number) => Promise<unknown>;
 };
 
 type Tool = {
@@ -112,7 +115,7 @@ export function gameTools(actions: GameToolActions): Tool[] {
     properties: {},
     additionalProperties: false,
   };
-  return [
+  const tools = [
     tool(
       'read_presidency',
       'Read presidency',
@@ -182,6 +185,63 @@ export function gameTools(actions: GameToolActions): Tool[] {
       },
     ),
   ];
+  if (actions.briefings)
+    tools.push(
+      tool(
+        'read_ghana_briefings',
+        'Read Ghana now',
+        'Read sourced current events; this does not change the campaign.',
+        noArgs,
+        true,
+        (input) => {
+          empty(input);
+          return actions.briefings!();
+        },
+      ),
+    );
+  const eventSchema = {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+      eventId: { type: 'string' },
+      eventVersion: { type: 'integer', minimum: 1 },
+    },
+    required: ['eventId', 'eventVersion'],
+  };
+  for (const [name, action, readOnly] of [
+    ['preview_current_event', actions.previewEvent, true],
+    ['accept_current_event', actions.acceptEvent, false],
+  ] as const) {
+    if (action)
+      tools.push(
+        tool(
+          name,
+          readOnly ? 'Preview current event' : 'Accept current event',
+          readOnly
+            ? 'Compare the next quarter with and without this approved event.'
+            : 'Explicitly accept this event version for the next game quarter. Saves the visible campaign.',
+          eventSchema,
+          readOnly,
+          (input) => {
+            const v = object(input);
+            if (
+              Object.keys(v).some(
+                (k) => !['eventId', 'eventVersion'].includes(k),
+              ) ||
+              typeof v.eventId !== 'string' ||
+              !v.eventId ||
+              !Number.isInteger(v.eventVersion) ||
+              Number(v.eventVersion) < 1
+            )
+              throw new Error(
+                'Choose an event ID and positive integer version.',
+              );
+            return action(v.eventId, Number(v.eventVersion));
+          },
+        ),
+      );
+  }
+  return tools;
 }
 export function registerGameTools(
   actions: GameToolActions,

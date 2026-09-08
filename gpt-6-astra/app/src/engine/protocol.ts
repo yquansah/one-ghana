@@ -11,13 +11,13 @@ import {
   serializeCampaign,
   validateCampaign,
 } from './validation';
-import type { GameState, PolicyProposal } from './types';
+import type { GameState, PolicyProposal, ExternalEventSchedule } from './types';
 export interface EnginePayloads {
   create: { seed?: number; name?: string };
-  preview: { state: GameState; proposal: PolicyProposal };
+  preview: { state: GameState; proposal: PolicyProposal; externalSchedule?: ExternalEventSchedule };
   submit: { state: GameState; proposal: PolicyProposal };
   advance: { state: GameState };
-  compare: { state: GameState; proposals: PolicyProposal[]; quarters?: number };
+  compare: { state: GameState; proposals: PolicyProposal[]; quarters?: number; externalSchedule?: ExternalEventSchedule };
   legacy: { state: GameState };
   import: { json: string };
   export: { state: GameState };
@@ -51,7 +51,7 @@ export function executeEngineAction<A extends EngineAction>(
       break;
     case 'preview': {
       const p = payload as EnginePayloads['preview'];
-      result = previewProposal(p.state, p.proposal);
+      result = previewProposal(p.state, p.proposal, p.externalSchedule);
       break;
     }
     case 'submit': {
@@ -64,7 +64,7 @@ export function executeEngineAction<A extends EngineAction>(
       break;
     case 'compare': {
       const p = payload as EnginePayloads['compare'];
-      result = comparePolicies(p.state, p.proposals, p.quarters);
+      result = comparePolicies(p.state, p.proposals, p.quarters, p.externalSchedule);
       break;
     }
     case 'legacy':
